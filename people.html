@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>People</title>
+</head>
+<body>
+<script>
+    class People {
+        numberPeople = 1000;
+        // numberMen = Math.floor(Math.random() * this.numberPeople)
+        numberMen = this.numberPeople / 2;
+        numberWomen = this.numberPeople - this.numberMen;
+        percentBorn = 2.3;
+        percentDeath = 1.15;
+        iteration = 0;
+        i = 0;
+        bornPeople = 0;
+        deathPeople = 0;
+        cityComfort = 0.7;
+        cityDiscomfort = 1 - this.cityComfort;
+        migrationPeople = 0;
+        EMigrationPeople = 0;
+
+
+        rand(number) {
+            return (Math.random() * number);
+        }
+
+        Born() {
+            this.i = 0;
+            this.bornPeople = 0;
+            if (this.numberWomen > 0 && this.numberMen > 0) {
+                while (this.i < this.numberWomen) {
+                    let chanceBorn = this.rand(100);
+                    if (this.percentBorn >= chanceBorn) {
+                        this.numberPeople++;
+                        this.bornPeople++;
+                        this.getGenderInp()
+                    }
+                    this.i++;
+                }
+            }
+            this.iteration++;
+        }
+
+        Death() {
+            this.i = 0;
+            this.deathPeople = 0;
+            while (this.i < this.numberPeople) {
+                let chanceDeath = this.rand(100);
+                if (this.percentDeath >= chanceDeath) {
+                    this.numberPeople--;
+                    this.deathPeople++;
+                    this.getGenderOut()
+                }
+                this.i++;
+            }
+        }
+
+        Migration() {
+            this.i = 0;
+            this.migrationPeople = Math.floor(this.rand(this.numberPeople * (0.01 + this.cityComfort / 10)));
+            this.numberPeople += this.migrationPeople;
+            while (this.i < this.migrationPeople) {
+                this.getGenderInp()
+                this.i++;
+            }
+        }
+
+        Emigration() {
+            this.i = 0;
+            this.EMigrationPeople = Math.floor(this.rand(this.numberPeople * (0.01 + this.cityDiscomfort / 10)));
+            this.numberPeople -= this.EMigrationPeople;
+            while (this.i < this.EMigrationPeople) {
+                this.getGenderOut()
+                this.i++;
+            }
+        }
+
+        getGenderInp() {
+            let gender = Math.floor(this.rand(2));
+            if (gender === 1) {
+                this.numberMen++;
+            } else if (gender === 0) this.numberWomen++;
+        }
+
+        getGenderOut() {
+            let gender = Math.floor(this.rand(2));
+            if (gender === 1 && this.numberMen > 0) this.numberMen--;
+            else if (gender === 1 && this.numberMen === 0) this.numberWomen--;
+            else if (gender === 0 && this.numberWomen > 0) this.numberWomen--;
+            else if (gender === 0 && this.numberMen === 0) this.numberMen--;
+        }
+
+        GetInfo() {
+            console.log("\niteration: " + this.iteration);
+            console.log("Рожденные за год " + this.bornPeople);
+            console.log("Умершие за год " + this.deathPeople);
+            console.log("Приехало в город за год: " + this.migrationPeople);
+            console.log("Уехало с города за год: " + this.EMigrationPeople);
+            console.log("people " + this.numberPeople);
+            console.log("women: " + this.numberWomen + " men: " + this.numberMen)
+        }
+
+        startSimulation() {
+            this.Born();
+            this.Death();
+            this.Migration();
+            this.GetInfo();
+            this.Emigration();
+            if (this.numberWomen === 0 && this.numberMen === 0) {
+                console.log("Все жители умерли");
+                clearTimeout(years);
+            }
+            let years = setTimeout(() => {
+                this.startSimulation();
+            }, 1000);
+        }
+    }
+
+    let people = new People();
+    people.startSimulation();
+</script>
+</body>
+</html>
