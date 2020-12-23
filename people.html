@@ -6,22 +6,61 @@
 </head>
 <body>
 <script>
+    let cityComfort = 0.7;
+    let cityDiscomfort = 1 - cityComfort;
+    let money = 100000;
+    let numberPeople = 100;
+
+
+    class City {
+        houseNumber = [];
+
+        start() {
+            let people = new People();
+            // this.createMainBuild();
+            people.startSimulation();
+        }
+
+        // createMainBuild() {
+        //     let percentGoodMayor = Math.floor(Math.random() * 101);
+        //     let mainbuild = new MainBuild(percentGoodMayor);
+        // }
+
+        createHouse() {
+            if (numberPeople / 50 > this.houseNumber.length) {
+                let house = new House(this.houseNumber.length);
+                this.houseNumber.push(house);
+            }
+        }
+    }
+
+    //  class MainBuild {
+    //     constructor(percentGoodMayor) {
+    //         this.percentGoodMayor = percentGoodMayor;
+    //     }
+    // }
+
+    class House {
+        constructor(indexHouse) {
+            this.indexHouse = indexHouse;
+        }
+    }
+
+
     class People {
-        numberPeople = 1000;
+
         // numberMen = Math.floor(Math.random() * this.numberPeople)
-        numberMen = this.numberPeople / 2;
-        numberWomen = this.numberPeople - this.numberMen;
+        numberMen = numberPeople / 2;
+        numberWomen = numberPeople - this.numberMen;
         percentBorn = 2.3;
         percentDeath = 1.15;
         iteration = 0;
         i = 0;
         bornPeople = 0;
         deathPeople = 0;
-        cityComfort = 0.7;
-        cityDiscomfort = 1 - this.cityComfort;
         migrationPeople = 0;
         EMigrationPeople = 0;
-
+        city = new City();
 
         rand(number) {
             return (Math.random() * number);
@@ -34,7 +73,7 @@
                 while (this.i < this.numberWomen) {
                     let chanceBorn = this.rand(100);
                     if (this.percentBorn >= chanceBorn) {
-                        this.numberPeople++;
+                        numberPeople++;
                         this.bornPeople++;
                         this.getGenderInp()
                     }
@@ -42,26 +81,28 @@
                 }
             }
             this.iteration++;
+
         }
 
         Death() {
             this.i = 0;
             this.deathPeople = 0;
-            while (this.i < this.numberPeople) {
+            while (this.i < numberPeople) {
                 let chanceDeath = this.rand(100);
                 if (this.percentDeath >= chanceDeath) {
-                    this.numberPeople--;
+                    numberPeople--;
                     this.deathPeople++;
                     this.getGenderOut()
                 }
                 this.i++;
             }
+
         }
 
         Migration() {
             this.i = 0;
-            this.migrationPeople = Math.floor(this.rand(this.numberPeople * (0.01 + this.cityComfort / 10)));
-            this.numberPeople += this.migrationPeople;
+            this.migrationPeople = Math.floor(this.rand(numberPeople * (0.005 + cityComfort / 10)));
+            numberPeople += this.migrationPeople;
             while (this.i < this.migrationPeople) {
                 this.getGenderInp()
                 this.i++;
@@ -70,8 +111,8 @@
 
         Emigration() {
             this.i = 0;
-            this.EMigrationPeople = Math.floor(this.rand(this.numberPeople * (0.01 + this.cityDiscomfort / 10)));
-            this.numberPeople -= this.EMigrationPeople;
+            this.EMigrationPeople = Math.floor(this.rand(numberPeople * (0.005 + cityDiscomfort / 10)));
+            numberPeople -= this.EMigrationPeople;
             while (this.i < this.EMigrationPeople) {
                 this.getGenderOut()
                 this.i++;
@@ -99,16 +140,22 @@
             console.log("Умершие за год " + this.deathPeople);
             console.log("Приехало в город за год: " + this.migrationPeople);
             console.log("Уехало с города за год: " + this.EMigrationPeople);
-            console.log("people " + this.numberPeople);
-            console.log("women: " + this.numberWomen + " men: " + this.numberMen)
+            console.log("people " + numberPeople);
+            console.log("women: " + this.numberWomen + " men: " + this.numberMen);
+            console.log("Количество жилых домов: " + this.city.houseNumber.length);
+            // console.log("Порядочность мэра: " + this.city.mainbuild.percentGoodMayor);
         }
 
         startSimulation() {
             this.Born();
             this.Death();
             this.Migration();
-            this.GetInfo();
             this.Emigration();
+            this.GetInfo();
+            // this.city.createMainBuild();
+            this.city.createHouse();
+
+
             if (this.numberWomen === 0 && this.numberMen === 0) {
                 console.log("Все жители умерли");
                 clearTimeout(years);
@@ -119,8 +166,9 @@
         }
     }
 
-    let people = new People();
-    people.startSimulation();
+    let start = new City();
+    start.start();
+
 </script>
 </body>
 </html>
