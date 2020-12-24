@@ -8,12 +8,58 @@
 <script>
     let cityComfort = 0.7;
     let cityDiscomfort = 1 - cityComfort;
-    let money = 100000;
-    let numberPeople = 100;
 
+    let numberPeople = 2200;
+    let money = 1000 * numberPeople;
+
+
+    class StartSimulation {
+        city = new City();
+        people = new People();
+        iteration = 1;
+
+        startSimulation() {
+            this.people.Born();
+            this.people.Death();
+            this.people.Migration();
+            this.people.Emigration();
+            this.people.GiveTax();
+            this.city.createHouse();
+            this.city.buildSupermarket();
+            this.GetInfo();
+            // this.city.createMainBuild();
+            this.iteration++;
+
+            if (this.people.numberWomen === 0 && this.people.numberMen === 0) {
+                console.log("Все жители умерли");
+                clearTimeout(years);
+            }
+            let years = setTimeout(() => {
+                this.startSimulation();
+            }, 1000);
+        }
+
+        GetInfo() {
+            console.log("\niteration: " + this.iteration);
+            console.log("Бюджет города: " + money);
+            console.log("Рожденные за год " + this.people.bornPeople);
+            console.log("Умершие за год " + this.people.deathPeople);
+            console.log("Приехало в город за год: " + this.people.migrationPeople);
+            console.log("Уехало с города за год: " + this.people.EMigrationPeople);
+            console.log("people " + numberPeople);
+            console.log("women: " + this.people.numberWomen + " men: " + this.people.numberMen);
+            console.log("Количество жилых домов: " + this.city.houseNumber.length);
+            console.log("Количество супермаркетов: " + this.city.supermarketNumber.length);
+            // console.log("Порядочность мэра: " + this.city.mainbuild.percentGoodMayor);
+        }
+
+
+    }
 
     class City {
+        buildSupermarketChance = 1;
         houseNumber = [];
+        supermarketNumber = [];
 
         start() {
             let people = new People();
@@ -27,10 +73,39 @@
         // }
 
         createHouse() {
-            if (numberPeople / 50 > this.houseNumber.length) {
+            while (numberPeople / 50 > this.houseNumber.length) {
+                money -= 25000;
                 let house = new House(this.houseNumber.length);
                 this.houseNumber.push(house);
             }
+        }
+
+        //Довести до путя шанси постройки супермаркета в залежності від кількості людей
+        buildSupermarket() {
+            if (this.supermarketNumber.length === 0) {
+                console.log("\n Построен новый супермаркет\n");
+                let supermarket = new SuperMarket(1);
+                money -= 50000;
+                this.supermarketNumber.push(supermarket);
+            } else if (this.supermarketNumber.length < numberPeople / 2500 + 1) {
+                this.buildSupermarketChance = numberPeople / 25;
+                let chanceBuild = this.randomInteger(1, 100);
+                if (this.buildSupermarketChance >= chanceBuild) {
+                    let supermarket = new SuperMarket(1);
+                    this.supermarketNumber.push(supermarket);
+                    console.log("\n Построен новый супермаркет\n");
+                }
+            } else {
+                this.buildSupermarketChance = 0;
+            }
+            console.log("\nШанс на построение супермаркета:" + this.buildSupermarketChance + "\n")
+        }
+
+        //Довести до путя шанси постройки супермаркета в залежності від кількості людей
+        
+        randomInteger(min, max) {
+            let rand = min - 0.5 + Math.random() * (max - min + 1);
+            return Math.round(rand);
         }
     }
 
@@ -39,6 +114,12 @@
     //         this.percentGoodMayor = percentGoodMayor;
     //     }
     // }
+
+    class SuperMarket {
+        constructor(indexSupermarket) {
+            this.indexSupermarket = indexSupermarket;
+        }
+    }
 
     class House {
         constructor(indexHouse) {
@@ -54,7 +135,7 @@
         numberWomen = numberPeople - this.numberMen;
         percentBorn = 2.3;
         percentDeath = 1.15;
-        iteration = 0;
+
         i = 0;
         bornPeople = 0;
         deathPeople = 0;
@@ -80,7 +161,7 @@
                     this.i++;
                 }
             }
-            this.iteration++;
+
 
         }
 
@@ -134,40 +215,16 @@
             else if (gender === 0 && this.numberMen === 0) this.numberMen--;
         }
 
-        GetInfo() {
-            console.log("\niteration: " + this.iteration);
-            console.log("Рожденные за год " + this.bornPeople);
-            console.log("Умершие за год " + this.deathPeople);
-            console.log("Приехало в город за год: " + this.migrationPeople);
-            console.log("Уехало с города за год: " + this.EMigrationPeople);
-            console.log("people " + numberPeople);
-            console.log("women: " + this.numberWomen + " men: " + this.numberMen);
-            console.log("Количество жилых домов: " + this.city.houseNumber.length);
-            // console.log("Порядочность мэра: " + this.city.mainbuild.percentGoodMayor);
+
+        GiveTax() {
+            money += numberPeople * 25;
         }
 
-        startSimulation() {
-            this.Born();
-            this.Death();
-            this.Migration();
-            this.Emigration();
-            this.GetInfo();
-            // this.city.createMainBuild();
-            this.city.createHouse();
 
-
-            if (this.numberWomen === 0 && this.numberMen === 0) {
-                console.log("Все жители умерли");
-                clearTimeout(years);
-            }
-            let years = setTimeout(() => {
-                this.startSimulation();
-            }, 1000);
-        }
     }
 
-    let start = new City();
-    start.start();
+    let start = new StartSimulation();
+    start.startSimulation();
 
 </script>
 </body>
