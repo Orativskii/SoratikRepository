@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>City</title>
+
+    <!--    Scripts bind   -->
+    <script src="./main/Simulator.js"></script>
+    <script src="./main/Time.js"></script>
+    <script src="./main/Resources.js"></script>
+    <script src="./modules/People.js"></script>
+</head>
+<body>
+
+<script>
+    let simulatorOptions = {
+        'happy': 70,
+        'balance': 200000,
+        'peopleCount': 100,
+        'lifeQuality': 0.7,
+        'RNI': 0.02,
+        'menCount' : 0,
+        'womenCount' : 0
+    }
+    let resources = new Resources(simulatorOptions);
+    let simulator = new Simulator(resources, Time.yearToWeek(10));
+
+    //Modules connection
+    let peopleModule = new People(resources);
+    //Modules connection END
+
+    simulator.start((res, time) => {
+
+        console.log('\t\t[Year callback]: Year: ' + time.year());
+
+        peopleModule.oneYear(res, time);
+        console.log(res.getPeopleCount());
+
+    }, (res, time) => {
+
+        peopleModule.oneMonth(res, time);
+
+    }, (res, time) => {
+
+        peopleModule.oneWeek(res, time);
+
+    });
+</script>
+
+</body>
+</html>
