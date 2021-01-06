@@ -19,7 +19,7 @@
     let simulatorOptions = {
         'happy': 70,
         'balance': 200000,
-        'peopleCount': 100,
+        'peopleCount': 1000,
         'lifeQuality': 0.7,
         'RNI': 0.02,
         'menCount' : 0,
@@ -40,11 +40,9 @@
         console.log(res.getPeopleCount());
 
     }, (res, time) => {
-
         peopleModule.oneMonth(res, time);
 
     }, (res, time) => {
-
         peopleModule.oneWeek(res, time);
 
     });
