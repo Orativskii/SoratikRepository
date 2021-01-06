@@ -6,18 +6,22 @@ class People {
     #menCount;
     #womenCount;
     #pregnancy;
+    #death;
     #pregnancyWomen;
     #bornPeople;
     thisWeek = 0;
     dateBorn = [];
+    #deathPeopleCount;
 
     constructor(resources) {
         this.#updateInput(resources);
         this.#menCount = this.getRandomValue(this.#peopleCount * 0.4, this.#peopleCount * 0.6);
         this.#womenCount = this.#peopleCount - this.#menCount;
         this.#pregnancy = 3;
+        this.#death = 1;
         this.#pregnancyWomen = 0;
         this.#bornPeople = 0;
+        this.#deathPeopleCount = 0;
     }
 
 
@@ -26,6 +30,7 @@ class People {
 
         this.pregnancyWomen();
         this.getDateBorn();
+        this.deathPeople()
         this.showData(res);
         this.#updateOutput(res);
 
@@ -38,8 +43,6 @@ class People {
         this.giveTax();
 
     }
-
-
 
     oneWeek(res, time) {
         this.thisWeek++;
@@ -62,15 +65,20 @@ class People {
         let i;
 
             this.dateBorn.forEach(i => {
+                // console.log(this.dateBorn.length);
+                // console.log(i + " \ncath\n");
+
+                // В умові не всі елементи масіва ловить!
+
                 if (this.thisWeek === i) {
+
                     this.#peopleCount++;
                     this.#bornPeople++;
-                    this.getGender();
+                    this.getGenderBorn();
             }
 
         });
     }
-
 
     getDateBorn() {
         this.dateBorn.length = 0;
@@ -84,10 +92,38 @@ class People {
         this.dateBorn.sort( (a, b) => a - b);
     }
 
-    getGender(res) {
+    deathPeople() {
+        let i = 0;
+        this.#deathPeopleCount = 0;
+        while(i < this.#peopleCount) {
+            let chanceDeath = this.getRandomValue(1, 100);
+            if (chanceDeath <= this.#death) {
+                this.#peopleCount--;
+                this.#deathPeopleCount++;
+                this.getGenderDeath();
+            }
+            i++;
+        }
+    }
+
+    getGenderBorn() {
         let gender = Math.floor(this.getRandomValue(0, 2));
         gender === 1 ? this.#menCount++ : this.#womenCount++;
     }
+
+    getGenderDeath() {
+        if (this.#menCount !== 0 && this.#womenCount !== 0) {
+            let gender = Math.floor(this.getRandomValue(0, 2));
+            gender === 1 ? this.#menCount-- : this.#womenCount--;
+        }
+        else if (this.#menCount !== 0 && this.#womenCount === 0) this.#menCount--;
+        else if  (this.#menCount === 0 && this.#womenCount !== 0) this.#womenCount--;
+        else {
+            console.log("All people death! Congratulations!");
+        }
+    }
+
+
         thisYearTax = 0;
 // плоти нолог
     giveTax() {
@@ -99,10 +135,13 @@ class People {
         console.log(this.dateBorn.length + " pregnancy women");
         console.log(this.#bornPeople + " born people for the year");
         this.#bornPeople = 0;
+        console.log(this.#deathPeopleCount + " death people for the year");
+        this.#deathPeopleCount = 0;
         console.log(this.#menCount + " mens");
         console.log(this.#womenCount + " womens");
         console.log("New tax money for the year: " + this.thisYearTax + "$");
         console.log("Balance city: " + this.#balance + "$");
+        console.log("\t People number: " + this.#peopleCount + "\n");
     }
 
 

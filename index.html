@@ -19,7 +19,7 @@
     let simulatorOptions = {
         'happy': 70,
         'balance': 200000,
-        'peopleCount': 1000,
+        'peopleCount': 100,
         'lifeQuality': 0.7,
         'RNI': 0.02,
         'menCount' : 0,
@@ -37,7 +37,6 @@
         console.log('\t\t[Year callback]: Year: ' + time.year());
 
         peopleModule.oneYear(res, time);
-        console.log(res.getPeopleCount());
 
     }, (res, time) => {
         peopleModule.oneMonth(res, time);
