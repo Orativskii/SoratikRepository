@@ -9,19 +9,24 @@ class People {
     #death;
     #pregnancyWomen;
     #bornPeople;
+    #deathPeople;
     thisWeek = 0;
     dateBorn = [];
+    dateDeath = [];
     #deathPeopleCount;
+    #RNI;
 
     constructor(resources) {
         this.#updateInput(resources);
         this.#menCount = this.getRandomValue(this.#peopleCount * 0.4, this.#peopleCount * 0.6);
         this.#womenCount = this.#peopleCount - this.#menCount;
-        this.#pregnancy = 3;
+        this.#pregnancy = 4;
         this.#death = 1;
         this.#pregnancyWomen = 0;
         this.#bornPeople = 0;
         this.#deathPeopleCount = 0;
+        this.#deathPeople = 0;
+        this.#RNI = 0;
     }
 
 
@@ -30,10 +35,11 @@ class People {
 
         this.pregnancyWomen();
         this.getDateBorn();
-        this.deathPeople()
+        this.getDateDeath();
+        this.#RNI = ((this.#bornPeople - this.#deathPeopleCount)/this.#peopleCount) * 1000;
         this.showData(res);
         this.#updateOutput(res);
-
+        this.thisWeek = 0;
 
     }
 
@@ -48,6 +54,7 @@ class People {
         this.thisWeek++;
         if (this.thisWeek > 52) this.thisWeek = 0;
         this.born();
+        this.deathPeople()
     }
 
     pregnancyWomen() {
@@ -64,17 +71,15 @@ class People {
     born() {
         let i;
 
-            this.dateBorn.forEach(i => {
-                // console.log(this.dateBorn.length);
-                // console.log(i + " \ncath\n");
+        this.dateBorn.forEach(i => {
+            //48 тижнів,а не 53
+            // В умові не всі елементи масіва ловить!
 
-                // В умові не всі елементи масіва ловить!
+            if (this.thisWeek === i) {
 
-                if (this.thisWeek === i) {
-
-                    this.#peopleCount++;
-                    this.#bornPeople++;
-                    this.getGenderBorn();
+                this.#peopleCount++;
+                this.#bornPeople++;
+                this.getGenderBorn();
             }
 
         });
@@ -89,21 +94,41 @@ class People {
             }
             this.#pregnancyWomen = 0;
         }
-        this.dateBorn.sort( (a, b) => a - b);
+        this.dateBorn.sort((a, b) => a - b);
     }
 
     deathPeople() {
-        let i = 0;
-        this.#deathPeopleCount = 0;
-        while(i < this.#peopleCount) {
-            let chanceDeath = this.getRandomValue(1, 100);
-            if (chanceDeath <= this.#death) {
+        let i;
+        this.dateDeath.forEach(i => {
+            if (this.thisWeek === i) {
                 this.#peopleCount--;
                 this.#deathPeopleCount++;
                 this.getGenderDeath();
             }
+        });
+    }
+
+    getDateDeath() {
+        let i = 0;
+        while (i < this.#peopleCount) {
+            let chanceDeath = this.getRandomValue(0, 100);
+            if (chanceDeath <= this.#death) {
+                this.#deathPeople++;
+            }
             i++;
+
         }
+
+        this.dateDeath.lenght = 0;
+        if (this.#deathPeople > 0) {
+            for (let i = 0; i < this.#deathPeople; i++) {
+                let dateDeathPeople = this.getRandomValue(1, 53);
+                this.dateDeath[i] = dateDeathPeople;
+            }
+            this.#deathPeople = 0;
+        }
+        this.dateDeath.sort((a, b) => a - b);
+
     }
 
     getGenderBorn() {
@@ -115,16 +140,16 @@ class People {
         if (this.#menCount !== 0 && this.#womenCount !== 0) {
             let gender = Math.floor(this.getRandomValue(0, 2));
             gender === 1 ? this.#menCount-- : this.#womenCount--;
-        }
-        else if (this.#menCount !== 0 && this.#womenCount === 0) this.#menCount--;
-        else if  (this.#menCount === 0 && this.#womenCount !== 0) this.#womenCount--;
+        } else if (this.#menCount !== 0 && this.#womenCount === 0) this.#menCount--;
+        else if (this.#menCount === 0 && this.#womenCount !== 0) this.#womenCount--;
         else {
             console.log("All people death! Congratulations!");
         }
     }
 
 
-        thisYearTax = 0;
+    thisYearTax = 0;
+
 // плоти нолог
     giveTax() {
         this.thisYearTax = this.#peopleCount * 5;
@@ -142,6 +167,7 @@ class People {
         console.log("New tax money for the year: " + this.thisYearTax + "$");
         console.log("Balance city: " + this.#balance + "$");
         console.log("\t People number: " + this.#peopleCount + "\n");
+        console.log("\t RNI: " + Math.floor(this.#RNI * 100) / 100);
     }
 
 
